@@ -15,7 +15,6 @@ Los asistentes de pruebas (también conocidos como "interactive theorem provers"
 * pueden resultar tediosos de utilizar;
 * son muy adictivos (igual que los videojuegos).
 
-A selection of proof assistants, classified by logical foundations:
 Los siguientes son asistentes de pruebas, clasificados según sus fundamentos lógicos:
 
 * teoría de conjuntos: Isabelle/ZF, Metamath, Mizar;
@@ -61,7 +60,6 @@ Fortalezas:
 * documentación;
 * de código abierto;
 * y da lugar a muchas bromas (Lean Forward, Lean Together, BooLean, …).
-* (Tal vez Coq gana en cuanto a las bromas)
 
 
 ## Nuestro objetivo
@@ -119,7 +117,6 @@ La flecha funcional asocia a la derecha:
 
 También podemos tener tipos polimórficos. En Lean, las variables de tipos deben
 estar ligadas mediante `∀`, por ejemplo, `∀α, α → α`.
-
 
 ## Términos
 
@@ -186,9 +183,9 @@ Reglas de tipificado:
     —————————— Var   si x : σ es la ocurrencia más a la derecha de x en C
     C ⊢ x : σ
 
-    C ⊢ t : σ → τ    C ⊢ u : σ
+    C ⊢ f : σ → τ    C ⊢ u : σ
     ——————————————————————————— App
-    C ⊢ t u : τ
+    C ⊢ f u : τ
 
     C, x : σ ⊢ t : τ
     ——————————————————————————— Fun
@@ -223,23 +220,24 @@ def someFunOfType : (α → β → γ) → ((β → α) → β) → α → γ :=
 Da las definiciones para términos cuyo tipo coincide con la firma dada. -/
 
 def I : α → α :=
-  sorry
+  fun a ↦ a
 
 def K : α → β → α :=
-  sorry
+  fun a _ ↦ a
 
 def C : (α → β → γ) → β → α → γ :=
-  sorry
+  fun fabg b a ↦ fabg a b
 
 def projFst : α → α → α :=
-  sorry
+  fun a₁ a₂ ↦ a₁
 
 /- Da una respuesta distinta a `projFst`. -/
 
 def projSnd : α → α → α :=
-  sorry
+  fun a₁ a₂ ↦ a₂
 
 def someNonsense : (α → β → γ) → α → (α → γ) → β → γ :=
-  sorry
+  fun fabg a fag b ↦ fabg a b
+  -- fun fabg a fag b ↦ fag a
 
 end SyV
