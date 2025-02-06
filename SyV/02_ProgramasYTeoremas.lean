@@ -58,6 +58,9 @@ inductive AExp : Type where
   | div : AExp → AExp → AExp
 
 
+#check AExp.num 9
+#check AExp.add (AExp.num 6) (AExp.var "x")
+
 /- ### Listas -/
 
 namespace MyList
@@ -98,6 +101,7 @@ def add : ℕ → ℕ → ℕ
 
 #eval add 2 7
 #reduce add 2 7
+#print add
 
 def mul : ℕ → ℕ → ℕ
   | _, Nat.zero   => Nat.zero
@@ -136,6 +140,11 @@ def powerIter (m n : ℕ) : ℕ :=
 
 #eval powerIter 2 5
 
+def addIter (m n : ℕ) : ℕ :=
+  iter ℕ m Nat.succ n
+
+#eval addIter 9 32
+
 def append (α : Type) : List α → List α → List α
   | List.nil,       ys => ys
   | List.cons x xs, ys => List.cons x (append α xs ys)
@@ -146,7 +155,9 @@ en cada llamada (o utilizar `_` si Lean puede inferir el tipo). -/
 
 #check append
 #eval append ℕ [3, 1] [4, 1, 5]
+#check append ℕ [3, 1] [4, 1, 5]
 #eval append _ [3, 1] [4, 1, 5]
+#check append _ [3, 1] [4, 1, 5]
 
 /- Si el argumento de tipo está entre `{ }` en vez de `( )`, el tipo es implícito
 y no se necesita proveer en cada llamada (dado que Lean pueda inferirlo). -/
@@ -156,6 +167,7 @@ def appendImplicit {α : Type} : List α → List α → List α
   | List.cons x xs, ys => List.cons x (appendImplicit xs ys)
 
 #eval appendImplicit [3, 1] [4, 1, 5]
+#check appendImplicit [3, 1] [4, 1, 5]
 
 /- Prefijar un nombre de definición con `@` da la definición correspondiente con
 todos los argumentos implícitos como si fuera explícitos. Esto es útil en casos
@@ -187,7 +199,7 @@ def eval (env : String → ℤ) : AExp → ℤ
   | AExp.mul e₁ e₂ => eval env e₁ * eval env e₂
   | AExp.div e₁ e₂ => eval env e₁ / eval env e₂
 
-#eval eval (fun x ↦ 7) (AExp.div (AExp.var "y") (AExp.num 0))
+#eval eval (fun x ↦ 7) (AExp.div (AExp.var "y") (AExp.num 2))
 
 /- Lean únicamente acepta definiciones de funciones para las cuáles puede
 probar que terminan. En particular, acepta funciones con __recursión estructural__,
@@ -206,7 +218,7 @@ theorem add_comm (m n : ℕ) :
   sorry
 
 theorem add_assoc (l m n : ℕ) :
-  add (add l m) n = add l (add m n) :=
+  (l + m) + n = l + (m + n) :=
   sorry
 
 theorem mul_comm (m n : ℕ) :
@@ -244,8 +256,9 @@ su argumento, o 0 si el argumento es 0. Por ejemplo:
     `pred 7 = 6`
     `pred 0 = 0` -/
 
-def pred : ℕ → ℕ :=
-  sorry
+def pred : ℕ → ℕ
+  | Nat.zero => Nat.zero
+  | Nat.succ n => n
 
 /- Verifica que tu función se comporta como se espera. -/
 
@@ -261,8 +274,10 @@ def pred : ℕ → ℕ :=
 Define una función genérica `map` que aplica una función a
 cada elemento de una lista. -/
 
-def map {α : Type} {β : Type} (f : α → β) : List α → List β :=
-  sorry
+def map {α : Type} {β : Type} (f : α → β) : List α → List β
+  | [] => []
+  | x :: xs => f x :: (map f xs)
+
 
 #eval map (fun n ↦ n + 10) [1, 2, 3]   -- expected: [11, 12, 13]
 
@@ -276,6 +291,10 @@ Intenta dar nombres descriptivos para tus teoremas. También, asegúrate de
 declarar la segunda propiedad tan generalmente como sea posible, para tipos
 arbitrarios. -/
 
--- teoremas aquí
+theorem map_id_fun {α : Type} (xs : List α) :
+  map (fun x ↦ x) xs = xs := sorry
+
+theorem map_comp {α β γ : Type} (xs : List α) (f : α → β) (g : β → γ) :
+   map (fun x ↦ g (f x)) xs = map g (map f xs) := sorry
 
 end SyV
