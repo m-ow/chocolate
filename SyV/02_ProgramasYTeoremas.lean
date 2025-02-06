@@ -4,7 +4,7 @@ Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 import SyV.SyVPrelude
 
 
-/- # LoVe Demo 2: Programs and Theorems -/
+/- # Clase 2: Programas y Teoremas -/
 
 
 set_option autoImplicit false
