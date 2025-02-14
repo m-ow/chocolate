@@ -27,7 +27,7 @@ Sintaxis de las demostraciones por tácticas:
     by
       _tactic₁_
       …
-      _tacticN
+      _tacticN_
 
 La palabra reservada `by` le indica a Lean que la demostración es por
 tácticas. -/
@@ -67,13 +67,13 @@ theorem prop_comp (a b c : Prop) (hab : a → b) (hbc : b → c) :
     intro ha
     apply hbc
     apply hab
-    apply ha
+    trivial
 
 /- La demostración anterior paso por paso:
 
 * Suponemos que tenemos una prueba de `a`.
 * La meta es `c`, que podemos demostrar al probar `b` (con `hbc`).
-* La meta es `b`, que podemos mostrar si probamos `b` (con `hab`).
+* La meta es `b`, que podemos mostrar si probamos `a` (con `hab`).
 * Ya sabemos que se sigue `a` (por `ha`).
 
 Luego, `exact` empareja la conclusión de la meta con el teorema
@@ -228,7 +228,8 @@ theorem modus_ponens (a b : Prop) :
 theorem Not_Not_intro (a : Prop) :
   a → ¬¬ a :=
   by
-    intro ha hna
+    intro ha
+    intro hna
     apply hna
     exact ha
 
@@ -301,60 +302,6 @@ theorem abc_Eq_cba (a b c : ℕ) :
   by ac_rfl
 
 
-/- ## Demostraciones por Inducción Matemática
-
-`induction` realiza inducción sobre una variable especificada. Da
-lugar a una sub-meta con nombre por constructor. -/
-
-theorem add_zero (n : ℕ) :
-  add 0 n = n :=
-  by
-    induction n with
-    | zero       => rfl
-    | succ n' ih => simp [add, ih]
-
-theorem add_succ (m n : ℕ) :
-  add (Nat.succ m) n = Nat.succ (add m n) :=
-  by
-    induction n with
-    | zero       => rfl
-    | succ n' ih => simp [add, ih]
-
-theorem add_comm (m n : ℕ) :
-  add m n = add n m :=
-  by
-    induction n with
-    | zero       => simp [add, add_zero]
-    | succ n' ih => simp [add, add_succ, ih]
-
-theorem add_assoc (l m n : ℕ) :
-  add (add l m) n = add l (add m n) :=
-  by
-    induction n with
-    | zero       => rfl
-    | succ n' ih => simp [add, ih]
-
-/- `ac_rfl` se puede extender. Podemos registrar `add` como un
-operador conmutativo y asociativo utilizando el mecanismo de
-instancias de __type classes__ (que veremos en otra clase más
-adelante). Esto es útil para invocar `ac_rfl` como sucede abajo. -/
-
-instance IsAssociative_add : Std.Associative add :=
-  { assoc := add_assoc }
-
-instance IsCommutative_add : Std.Commutative add :=
-  { comm := add_comm }
-
-theorem mul_add (l m n : ℕ) :
-  mul l (add m n) = add (mul l m) (mul l n) :=
-  by
-    induction n with
-    | zero       => rfl
-    | succ n' ih =>
-      simp [add, mul, ih]
-      ac_rfl
-
-
 /- ## Tácticas de Limpieza
 
 `clear` remueve variables o hipótesis sin utilizar.
@@ -370,34 +317,6 @@ theorem cleanup_example (a b c : Prop) (ha : a) (hb : b)
     clear hbc c
     rename b => h
     exact h
-
-theorem C (a b c : Prop) :
-  (a → b → c) → b → a → c :=
-  sorry
-
-theorem some_nonsense (a b c : Prop) :
-  (a → b → c) → a → (a → c) → b → c :=
-  sorry
-
-theorem contrapositive (a b : Prop) :
-  (a → b) → ¬ b → ¬ a :=
-  sorry
-
-#check mul
-
-theorem mul_zero (n : ℕ) :
-  mul 0 n = 0 :=
-  sorry
-
-#check add_succ
-
-theorem mul_succ (m n : ℕ) :
-  mul (Nat.succ m) n = add (mul m n) n :=
-  sorry
-
-theorem mul_comm (m n : ℕ) :
-  mul m n = mul n m :=
-  sorry
 
 end BackwardProofs
 
