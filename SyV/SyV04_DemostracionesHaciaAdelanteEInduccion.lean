@@ -188,6 +188,8 @@ namespace Induction
 `induction` realiza inducción sobre una variable especificada.
 Da lugar a una sub-meta con nombre por cada constructor. -/
 
+#print Nat
+
 theorem add_zero (n : ℕ) :
   add 0 n = n :=
   by
@@ -400,16 +402,16 @@ structure RGBA extends RGB where
 #print RGBA
 
 def pureRed : RGB :=
-  RGB.mk 0xff 0x00 0x00
+  RGB.mk 255 0 0
 
 def pureGreen : RGB :=
-  { red   := 0x00
-    green := 0xff
-    blue  := 0x00 }
+  { red   := 0
+    green := 255
+    blue  := 0 }
 
 def semitransparentGreen : RGBA :=
   { pureGreen with
-    alpha := 0x7f }
+    alpha := 127 }
 
 #print pureRed
 #print pureGreen
