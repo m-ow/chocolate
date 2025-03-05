@@ -5,8 +5,7 @@ import SyV.SyV02_ProgramasYTeoremas
 import SyV.SyV04_DemostracionesHaciaAdelanteEInduccion
 
 
-/- # Clase 5: Type Classes y Predicados Inductivos
--/
+/- # Clase 5: Type Classes y Predicados Inductivos -/
 
 
 set_option autoImplicit false
@@ -36,6 +35,7 @@ Supongamos que se tiene una función `elige` que toma un número
 `elige` tiene el siguiente tipo dependiente:
 
     `(n : ℕ) → {i : ℕ // i ≤ n}`
+    `(n : ℕ) → ℕ`
 
 Podemos entender a este tipo como una familia `ℕ`-indexada,
 donde el tipo de cada miembro depende del índice:
@@ -108,6 +108,8 @@ theorem add_assoc (l m n : ℕ) :
     | zero       => rfl
     | succ n' ih => simp [add, ih]
 
+#check add_assoc
+
 instance IsAssociative_add : Std.Associative add :=
   { assoc := add_assoc }
 
@@ -132,7 +134,7 @@ namespace InductivePredicates
 Es común para los matemáticos definir algo como "el conjunto
 más pequeño que cumple ...". Por ejemplo:
 
-    El conjunto `E` de números naturales pares se define
+    El conjunto `Even` de números naturales pares se define
     como el conjunto más pequeño cerrado bajo las siguientes
     reglas:
     (1) `0 ∈ E` y
@@ -250,12 +252,37 @@ no produce una hipótesis inductiva. -/
 theorem Not_Even_two_mul_add_one (m n : ℕ)
     (hm : m = 2 * n + 1) :
   ¬ Even m :=
-  sorry
+  by
+    intro em
+    induction em generalizing n with
+    | zero => linarith
+    | add_two k ek ih =>
+      apply ih (n - 1)
+      cases n with
+      | zero => simp at *
+      | succ n' =>
+        simp at *
+        rw [Nat.succ_eq_add_one] at hm
+        linarith
+
 
 theorem Star_Star_Iff_Star {α : Type} (R : α → α → Prop)
     (a b : α) :
   Star (Star R) a b ↔ Star R a b :=
-  sorry
+  by
+    apply Iff.intro
+    . intro hss
+      induction hss with
+      | base a' b' hs => exact hs
+      | refl a' => apply Star.refl
+      | trans a' b' c' hab hbc ih₁ ih₂ =>
+        apply Star.trans a' b'
+        exact ih₁
+        exact ih₂
+    . intro h
+      apply Star.base
+      exact h
+
 
 #check funext
 #check propext
@@ -263,7 +290,14 @@ theorem Star_Star_Iff_Star {α : Type} (R : α → α → Prop)
 @[simp] theorem Star_Star_Eq_Star {α : Type}
     (R : α → α → Prop) :
   Star (Star R) = Star R :=
-  sorry
+  by
+    apply funext
+    intro a
+    apply funext
+    intro b
+    apply propext
+    apply Star_Star_Iff_Star
+
 
 /- ### Palindromos -/
 
@@ -289,7 +323,18 @@ theorem reverse_append {α : Type} :
 theorem Palindrome_reverse {α : Type} (xs : List α)
     (hxs : Palindrome xs) :
   Palindrome (reverse xs) :=
-  sorry
+  by
+    induction hxs with
+    | nil =>
+      simp [reverse]
+      exact Palindrome.nil
+    | single x =>
+      simp [reverse]
+      exact Palindrome.single x
+    | sandwich x' xs' hxs' ih =>
+      simp [reverse_append, reverse]
+      apply Palindrome.sandwich
+      exact ih
 
 end InductivePredicates
 
