@@ -200,7 +200,7 @@ theorem SmallStep_deterministic {Ss Ll Rr}
     | comp_step S S₁ T s s₁ hS₁ ih =>
       cases hr with
       | comp_step S S₂ _ _ s₂ hS₂ =>
-        have hSs₁₂ :=
+        have hipotesis_cool :=
           ih hS₂
         aesop
       | comp_skip => cases hS₁
@@ -301,6 +301,7 @@ theorem RTC_SmallStep_comp {S T s u}
     let (S, s) := Ss
     let (S', s') := Ss'
     apply SmallStep.comp_step
+    simp
     assumption
 
 #print RTC.single
