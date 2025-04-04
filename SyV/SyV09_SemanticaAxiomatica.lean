@@ -25,10 +25,10 @@ open Lean.Elab.Tactic
 namespace SyV
 
 
-/- ## Tripletas de Hoare
+/- ## Ternas de Hoare
 
 Los juicios básicos de la semántica axiomática se llaman
-__tripletas de Hoare__. Son de la forma:
+__ternas de Hoare__. Son de la forma:
 
     `{P} S {Q}`
 
@@ -46,7 +46,7 @@ Esto es un enunciado de __corrección parcial__: El programa es
 correcto si termina normalmente (es decir, no hay errores durante
 la ejecución, no hay ciclos infinitos o divergencia).
 
-Todas las siguientes tripletas de Hoare son válidas:
+Todas las siguientes ternas de Hoare son válidas:
 
     `{True} b := 4 {b = 4}`
     `{a = 2} b := 2 * a {a = 2 ∧ b = 4}`
@@ -139,6 +139,7 @@ namespace PartialHoare
 theorem skip_intro {P} :
   {* P *} (Stmt.skip) {* P *} :=
   by
+    rw [PartialHoare]
     intro s t hs hst
     cases hst
     assumption
@@ -440,7 +441,6 @@ show {* fun s ↦ s "n" = n₀ ∧ s "m" = m₀ *}
          Stmt.assign "m" (fun s ↦ s "m" + 1)))
      {* fun s ↦ s "n" = 0 ∧ s "m" = n₀ + m₀ *} from
   by
-    vcg <;>
-      aesop
+    vcg <;> aesop
 
 end SyV
